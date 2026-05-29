@@ -1,7 +1,7 @@
 # tests/test_main.py
 import pytest
 
-from base_python_project import main
+from iot_simulator import main
 
 
 def test_run(capsys: pytest.CaptureFixture[str]) -> None:

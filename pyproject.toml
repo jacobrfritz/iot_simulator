@@ -1,5 +1,5 @@
 [project]
-name = "base_python_project"
+name = "iot_simulator"
 version = "0.1.0"
 description = "A default Python project template using uv."
 readme = "README.md"
@@ -7,7 +7,7 @@ requires-python = ">=3.12"
 dependencies = []
 
 [project.scripts]
-base_python_project = "base_python_project.cli:main"
+iot_simulator = "iot_simulator.cli:main"
 
 [project.optional-dependencies]
 # Analytics & Data Manipulation
