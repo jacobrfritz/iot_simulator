@@ -19,10 +19,18 @@ class Producer(Protocol):
     event_create_distribution: Distribution
     event_delay_distribution: Distribution
     event_emitter: EventEmitter
+    
+    def __init__(
+        self,
+        event_create_distribution: Distribution,
+        event_delay_distribution: Distribution,
+        event_value_distribution: Distribution,
+        event_emitter: EventEmitter,
+    ) -> None: ...
 
-    def generate_event(self) -> Event: ...
+    def generate_event(self, mean:float, sd:float) -> Event: ...
 
-    async def event_loop(self): ...
+    async def event_loop(self, mean: float, sd: float): ...
 
 
 class IOTProducer(Producer):
