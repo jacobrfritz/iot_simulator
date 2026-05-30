@@ -40,7 +40,6 @@ def parse_args(args: list[str]) -> argparse.Namespace:
 
 async def async_main() -> None:
     args = parse_args(sys.argv[1:])
-    print(args)
     await run(args)
 
 
