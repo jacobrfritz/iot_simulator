@@ -28,9 +28,9 @@ class Producer(Protocol):
         event_emitter: EventEmitter,
     ) -> None: ...
 
-    def generate_event(self, mean: float, sd: float) -> Event: ...
+    def generate_event(self) -> Event: ...
 
-    async def event_loop(self, mean: float, sd: float): ...
+    async def event_loop(self): ...
 
 
 class IOTProducer(Producer):
@@ -47,16 +47,16 @@ class IOTProducer(Producer):
         self.event_value_distribution = event_value_distribution
         self.event_emitter = event_emitter
 
-    def generate_event(self, mean: float, sd: float) -> tuple:
-        event_inter_arrival_time = self.event_create_distribution.sample(mean, sd)
-        event_delay_time = self.event_delay_distribution.sample(mean, sd)
-        event_value = self.event_value_distribution.sample(mean, sd)
+    def generate_event(self) -> tuple:
+        event_inter_arrival_time = self.event_create_distribution.sample()
+        event_delay_time = self.event_delay_distribution.sample()
+        event_value = self.event_value_distribution.sample()
         return event_inter_arrival_time, event_delay_time, event_value
 
-    async def event_loop(self, mean: float, sd: float):
+    async def event_loop(self):
         while True:
             event_inter_arrival_time, event_delay_time, event_value = (
-                self.generate_event(mean, sd)
+                self.generate_event()
             )
             await asyncio.sleep(event_inter_arrival_time)
             event_start_time = datetime.now()
