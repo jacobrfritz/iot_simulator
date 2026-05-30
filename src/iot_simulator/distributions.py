@@ -8,7 +8,7 @@ class Distribution(Protocol):
 
 
 class Normal(Distribution):
-    def __init__(self, mean: float = 0.0, sd: float = 1.0) -> None:
+    def __init__(self, mean: float = 0.1, sd: float = 0.01) -> None:
         self.rng = np.random.default_rng()
         self.mean = mean
         self.sd = sd
@@ -27,7 +27,7 @@ class Poisson(Distribution):
         return num
       
 class LogNormal(Distribution):
-    def __init__(self, mean:float = 1, sigma:float = 1) -> None:
+    def __init__(self, mean: float = -3.0, sigma: float = 0.5) -> None:
         self.rng = np.random.default_rng()
         self.mean = mean
         self.sigma = sigma
