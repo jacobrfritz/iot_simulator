@@ -9,4 +9,4 @@ class EventEmitter(Protocol):
 
 class PrintEventEmitter(EventEmitter):
     def emit(self, event: Event):
-        print(event)
+        print(event.to_json())
