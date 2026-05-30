@@ -931,6 +931,9 @@ wheels = [
 name = "iot-simulator"
 version = "0.1.0"
 source = { editable = "." }
+dependencies = [
+    { name = "numpy" },
+]
 
 [package.optional-dependencies]
 agents = [
@@ -985,6 +988,7 @@ requires-dist = [
     { name = "huggingface-hub", marker = "extra == 'ml'", specifier = ">=0.16.0" },
     { name = "instructor", marker = "extra == 'agents'", specifier = ">=0.5.0" },
     { name = "matplotlib", marker = "extra == 'data'", specifier = ">=3.7.0" },
+    { name = "numpy", specifier = ">=2.4.4" },
     { name = "numpy", marker = "extra == 'data'", specifier = ">=1.24.0" },
     { name = "openai", marker = "extra == 'agents'", specifier = ">=1.0.0" },
     { name = "pandas", marker = "extra == 'data'", specifier = ">=2.0.0" },

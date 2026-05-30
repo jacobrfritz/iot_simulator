@@ -1,4 +1,4 @@
-# src/base_python_project/cli.py
+import asyncio
 import argparse
 import sys
 
@@ -10,9 +10,13 @@ def parse_args(args: list[str]) -> argparse.Namespace:
     return parser.parse_args(args)
 
 
-def main() -> None:
+async def async_main() -> None:
     _ = parse_args(sys.argv[1:])
-    run()
+    await run()
+
+
+def main() -> None:
+    asyncio.run(async_main())
 
 
 if __name__ == "__main__":

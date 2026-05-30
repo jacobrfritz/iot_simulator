@@ -1,6 +1,8 @@
-# base_python_project
+# iot_simulator
 
-A robust default Python project template using `uv`.
+Spawn multiple producers which create events with different distributions and delays
+
+---------------------------------------------------------------------------------------------------------------------------
 
 ## Setup
 
