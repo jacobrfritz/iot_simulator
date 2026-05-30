@@ -9,9 +9,15 @@ from iot_simulator.producers import IOTProducer
 def clients_to_generate(factory: ProducerFactory, emitter, args:argparse.Namespace):
     all_clients = []
     for group in args.dist:
-        if group['type'] == 'normal':
-            producers = factory.make_producers(
-            num_producers=group['clients'], producer=IOTProducer, distribution=Normal(), emitter=emitter
+        if group['create_distribution'] == 'normal':
+            create_distribution = Normal()
+        if group['delay_distribution'] == 'normal':
+            delay_distribution = Normal()
+        if group['event_value_distribution'] == 'normal':
+            event_value_distribution = Normal()
+            
+        producers = factory.make_producers(
+        num_producers=group['clients'], producer=IOTProducer, create_distribution=create_distribution, delay_distribtuion=delay_distribution, event_value_distribution=event_value_distribution, emitter=emitter
         )
         all_clients.extend(producers)
     return producers

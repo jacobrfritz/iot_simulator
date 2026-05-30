@@ -7,10 +7,14 @@ from .main import run
 
 def parse_distribution(value):
     try:
-        # Expected format: distribution_name,client_count
+        # Expected format: create_distribution, delay_distribtuion, event_value_distribution, client_count
         # Example: normal,10
-        dist_type, clients = value.split(",")
-        return {"type": dist_type, "clients": int(clients)}
+        create_distribution, delay_distribution, event_value_distribution, clients = value.split(",")
+        return {
+            "create_distribution": create_distribution,
+            "delay_distribution": delay_distribution, 
+            "event_value_distribution": event_value_distribution, 
+            "clients": int(clients)}
     except ValueError:
         raise argparse.ArgumentTypeError(
             "Distributions must be formatted as 'type,clients' (e.g., normal,10)"
@@ -32,7 +36,7 @@ def parse_args(args: list[str]) -> argparse.Namespace:
     # Iterate through your configured client groups
     for config in parsed_args.dist:
         print(
-            f"Spawning {config['clients']} clients with {config['type']} distribution."
+            f"Spawning {config['clients']} clients with {config['create_distribution']} event creation distribution, {config['delay_distribution']} delay distribution, {config['event_value_distribution']} event value distribution."
         )
 
     return parsed_args
