@@ -2,6 +2,11 @@
 
 Spawn multiple producers which create events with different distributions and delays
 
+Example Usage
+```python
+uv run iot_simulator --dist poisson,lognormal,normal,10
+```
+
 ---------------------------------------------------------------------------------------------------------------------------
 
 ## Setup
