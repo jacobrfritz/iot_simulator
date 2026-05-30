@@ -47,13 +47,17 @@ class IOTProducer(Producer):
         self.event_value_distribution = event_value_distribution
         self.event_emitter = event_emitter
 
-    def generate_event(self) -> tuple:
+    def generate_event(self) -> tuple[float,float,float]:
         event_inter_arrival_time = self.event_create_distribution.sample()
         event_delay_time = self.event_delay_distribution.sample()
         event_value = self.event_value_distribution.sample()
         return event_inter_arrival_time, event_delay_time, event_value
 
     async def event_loop(self):
+        async def delay_and_emit(event_delay_time:float, event:Event)-> None:
+            await asyncio.sleep(event_delay_time)
+            self.event_emitter.emit(event)
+            
         while True:
             event_inter_arrival_time, event_delay_time, event_value = (
                 self.generate_event()
@@ -63,5 +67,4 @@ class IOTProducer(Producer):
             event = Event(
                 producer_id=self.id, event_time=event_start_time, payload=event_value
             )
-            await asyncio.sleep(event_delay_time)
-            self.event_emitter.emit(event)
+            asyncio.create_task(delay_and_emit(event_delay_time, event))
