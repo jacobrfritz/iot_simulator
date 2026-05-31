@@ -4,7 +4,7 @@ Spawn multiple producers which create events with different distributions and de
 
 Example Usage
 ```python
-uv run iot_simulator --dist poisson,lognormal,normal,10
+uv run iot_simulator --dist exponential,lognormal,normal,10
 ```
 
 ---------------------------------------------------------------------------------------------------------------------------
