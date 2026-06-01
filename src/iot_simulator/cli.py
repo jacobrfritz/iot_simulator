@@ -9,12 +9,15 @@ def parse_distribution(value):
     try:
         # Expected format: create_distribution, delay_distribtuion, event_value_distribution, client_count
         # Example: normal,10
-        create_distribution, delay_distribution, event_value_distribution, clients = value.split(",")
+        create_distribution, delay_distribution, event_value_distribution, clients = (
+            value.split(",")
+        )
         return {
             "create_distribution": create_distribution,
-            "delay_distribution": delay_distribution, 
-            "event_value_distribution": event_value_distribution, 
-            "clients": int(clients)}
+            "delay_distribution": delay_distribution,
+            "event_value_distribution": event_value_distribution,
+            "clients": int(clients),
+        }
     except ValueError:
         raise argparse.ArgumentTypeError(
             "Distributions must be formatted as 'type,clients' (e.g., normal,10)"
