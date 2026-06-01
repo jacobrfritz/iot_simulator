@@ -56,7 +56,7 @@ class IOTProducer(Producer):
     async def event_loop(self):
         async def delay_and_emit(event_delay_time:float, event:Event)-> None:
             await asyncio.sleep(event_delay_time)
-            self.event_emitter.emit(event)
+            await self.event_emitter.emit(event)
             
         while True:
             event_inter_arrival_time, event_delay_time, event_value = (

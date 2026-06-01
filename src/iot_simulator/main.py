@@ -2,7 +2,7 @@ import asyncio
 import argparse
 
 from iot_simulator.distributions import Normal, Exponential, LogNormal 
-from iot_simulator.event_emitters import PrintEventEmitter
+from iot_simulator.event_emitters import RedisEventEmitter
 from iot_simulator.producer_factory import ProducerFactory
 from iot_simulator.producers import IOTProducer
 
@@ -39,7 +39,7 @@ def clients_to_generate(factory: ProducerFactory, emitter, args:argparse.Namespa
 async def run(args) -> None:
     """Core application logic."""
     
-    emitter = PrintEventEmitter()
+    emitter = RedisEventEmitter()
     factory = ProducerFactory()
     producers = clients_to_generate(factory, emitter, args)
     event_loops = [producer.event_loop() for producer in producers]
