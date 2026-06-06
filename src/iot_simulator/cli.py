@@ -51,8 +51,10 @@ async def async_main() -> None:
 
 
 def main() -> None:
-    asyncio.run(async_main())
-
+    try:
+        asyncio.run(async_main())
+    except KeyboardInterrupt:
+        print("\n[!] IoT Simulator stopped by user. Exiting gracefully...")
 
 if __name__ == "__main__":
     main()
