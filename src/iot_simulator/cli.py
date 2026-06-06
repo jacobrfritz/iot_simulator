@@ -1,27 +1,33 @@
-import asyncio
 import argparse
+import asyncio
 import sys
+from typing import Any
 
 from .main import run
 
 
-def parse_distribution(value):
+def parse_distribution(value: str) -> dict[str, Any]:
     try:
-        # Expected format: create_distribution, delay_distribtuion, event_value_distribution, client_count
+        # Expected format:
+        # create_distribution, delay_distribution,
+        # event_value_distribution, client_count
         # Example: normal,10
-        create_distribution, delay_distribution, event_value_distribution, clients = (
-            value.split(",")
-        )
+        (
+            create_distribution,
+            delay_distribution,
+            event_value_distribution,
+            clients,
+        ) = value.split(",")
         return {
             "create_distribution": create_distribution,
             "delay_distribution": delay_distribution,
             "event_value_distribution": event_value_distribution,
             "clients": int(clients),
         }
-    except ValueError:
+    except ValueError as err:
         raise argparse.ArgumentTypeError(
             "Distributions must be formatted as 'type,clients' (e.g., normal,10)"
-        )
+        ) from err
 
 
 def parse_args(args: list[str]) -> argparse.Namespace:
@@ -31,7 +37,10 @@ def parse_args(args: list[str]) -> argparse.Namespace:
         type=parse_distribution,
         action="append",
         required=True,
-        help="Specify distribution and clients as 'type,clients'. Example: --dist normal,10 --dist poisson,5",
+        help=(
+            "Specify distribution and clients as 'type,clients'. "
+            "Example: --dist normal,10 --dist poisson,5"
+        ),
     )
 
     parsed_args = parser.parse_args()
@@ -39,7 +48,10 @@ def parse_args(args: list[str]) -> argparse.Namespace:
     # Iterate through your configured client groups
     for config in parsed_args.dist:
         print(
-            f"Spawning {config['clients']} clients with {config['create_distribution']} event creation distribution, {config['delay_distribution']} delay distribution, {config['event_value_distribution']} event value distribution."
+            f"Spawning {config['clients']} clients with "
+            f"{config['create_distribution']} event creation distribution, "
+            f"{config['delay_distribution']} delay distribution, "
+            f"{config['event_value_distribution']} event value distribution."
         )
 
     return parsed_args
@@ -55,6 +67,7 @@ def main() -> None:
         asyncio.run(async_main())
     except KeyboardInterrupt:
         print("\n[!] IoT Simulator stopped by user. Exiting gracefully...")
+
 
 if __name__ == "__main__":
     main()
