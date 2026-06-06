@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from typing import Protocol
+import asyncio
 import uuid
 from datetime import datetime
-import asyncio
+from typing import Protocol
 
-from iot_simulator.event_emitters import EventEmitter
 from iot_simulator.distributions import Distribution
+from iot_simulator.event_emitters import EventEmitter
 from iot_simulator.interfaces import Event
 
 
@@ -28,9 +28,9 @@ class Producer(Protocol):
         event_emitter: EventEmitter,
     ) -> None: ...
 
-    def generate_event(self) -> Event: ...
+    def generate_event(self) -> tuple[float, float, float]: ...
 
-    async def event_loop(self): ...
+    async def event_loop(self) -> None: ...
 
 
 class IOTProducer(Producer):
@@ -53,10 +53,13 @@ class IOTProducer(Producer):
         event_value = self.event_value_distribution.sample()
         return event_inter_arrival_time, event_delay_time, event_value
 
-    async def event_loop(self):
+    async def event_loop(self) -> None:
         async def delay_and_emit(event_delay_time: float, event: Event) -> None:
             await asyncio.sleep(event_delay_time)
-            await self.event_emitter.emit(event)
+            try:
+                await self.event_emitter.emit(event)
+            except Exception as e:
+                print(f"Error emitting event from producer {self.id}: {e}")
 
         while True:
             event_inter_arrival_time, event_delay_time, event_value = (
