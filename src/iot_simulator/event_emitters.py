@@ -6,20 +6,30 @@ from iot_simulator.interfaces import Event
 
 
 class EventEmitter(Protocol):
-    async def emit(self, event: Event): ...
+    async def emit(self, event: Event) -> None: ...
 
 
 class PrintEventEmitter(EventEmitter):
-    async def emit(self, event: Event):
+    async def emit(self, event: Event) -> None:
         print(event.to_json())
 
 
 class RedisEventEmitter(EventEmitter):
-    async def emit(self, event: Event, stream_name: str = "iot_events"):
-        try:
-            r = aioredis.Redis(host="localhost", port=6379, decode_responses=True)
-        except ConnectionRefusedError:
-            print("Can't Connect to to redis")
-        entry_id = await r.xadd(
+    def __init__(self, host: str = "localhost", port: int = 6379):
+        self.pool = aioredis.BlockingConnectionPool(
+            host=host,
+            port=port,
+            max_connections=100,
+            timeout=30,
+            decode_responses=True,
+        )
+        self.r = aioredis.Redis(connection_pool=self.pool)
+
+    async def emit(self, event: Event, stream_name: str = "iot_events") -> None:
+        await self.r.xadd(
             stream_name, event.to_dict(), id="*", maxlen=50000, approximate=True
         )
+
+    async def close(self) -> None:
+        await self.r.aclose()
+        await self.pool.disconnect()
