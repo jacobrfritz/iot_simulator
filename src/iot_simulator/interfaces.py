@@ -1,7 +1,8 @@
-from dataclasses import dataclass
-import uuid
-from datetime import datetime
 import json
+import uuid
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any
 
 
 @dataclass
@@ -22,7 +23,7 @@ class Event:
         }
         return json.dumps(out)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[Any, Any]:
         out = {
             "producer_id": str(self.producer_id),
             "event_time": self.event_time.isoformat(),

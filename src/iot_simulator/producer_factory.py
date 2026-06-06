@@ -2,9 +2,9 @@
 receives cmd line arguments to generate groups of producers
 """
 
-from iot_simulator.producers import Producer
 from iot_simulator.distributions import Distribution
 from iot_simulator.event_emitters import EventEmitter
+from iot_simulator.producers import Producer
 
 
 class ProducerFactory:
