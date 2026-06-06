@@ -16,7 +16,10 @@ class PrintEventEmitter(EventEmitter):
 
 class RedisEventEmitter(EventEmitter):
     async def emit(self, event: Event, stream_name: str = "iot_events"):
-        r = aioredis.Redis(host="localhost", port=6379, decode_responses=True)
+        try:
+            r = aioredis.Redis(host="localhost", port=6379, decode_responses=True)
+        except ConnectionRefusedError:
+            print("Can't Connect to to redis")
         entry_id = await r.xadd(
             stream_name, event.to_dict(), id="*", maxlen=50000, approximate=True
         )
