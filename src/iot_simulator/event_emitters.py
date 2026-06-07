@@ -1,4 +1,5 @@
 from typing import Protocol
+import asyncio
 
 import redis.asyncio as aioredis
 
@@ -33,3 +34,11 @@ class RedisEventEmitter(EventEmitter):
     async def close(self) -> None:
         await self.r.aclose()
         await self.pool.disconnect()
+        
+class GatewayEventEmitter(EventEmitter):
+    def __init__(self, queue: asyncio.Queue):
+        self.queue = queue
+        
+    async def emit(self, event: Event):
+        await self.queue.put(event)
+
