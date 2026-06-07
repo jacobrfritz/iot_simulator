@@ -54,20 +54,25 @@ class IOTProducer(Producer):
         return event_inter_arrival_time, event_delay_time, event_value
 
     async def event_loop(self) -> None:
+        background_tasks = set()
+
         async def delay_and_emit(event_delay_time: float, event: Event) -> None:
-            await asyncio.sleep(event_delay_time)
+            await asyncio.sleep(max(0.0, event_delay_time))
             try:
                 await self.event_emitter.emit(event)
             except Exception as e:
-                print(f"Error emitting event from producer {self.id}: {e}")
+                if "client has been closed" not in str(e):
+                    print(f"Error emitting event from producer {self.id}: {e}")
 
         while True:
             event_inter_arrival_time, event_delay_time, event_value = (
                 self.generate_event()
             )
-            await asyncio.sleep(event_inter_arrival_time)
+            await asyncio.sleep(max(0.0, event_inter_arrival_time))
             event_start_time = datetime.now()
             event = Event(
                 producer_id=self.id, event_time=event_start_time, payload=event_value
             )
-            asyncio.create_task(delay_and_emit(event_delay_time, event))
+            task = asyncio.create_task(delay_and_emit(event_delay_time, event))
+            background_tasks.add(task)
+            task.add_done_callback(background_tasks.discard)
