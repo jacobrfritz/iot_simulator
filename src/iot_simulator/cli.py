@@ -6,53 +6,31 @@ from typing import Any
 from .main import run
 
 
-def parse_distribution(value: str) -> dict[str, Any]:
-    try:
-        # Expected format:
-        # create_distribution, delay_distribution,
-        # event_value_distribution, client_count
-        # Example: normal,10
-        (
-            create_distribution,
-            delay_distribution,
-            event_value_distribution,
-            clients,
-        ) = value.split(",")
-        return {
-            "create_distribution": create_distribution,
-            "delay_distribution": delay_distribution,
-            "event_value_distribution": event_value_distribution,
-            "clients": int(clients),
-        }
-    except ValueError as err:
-        raise argparse.ArgumentTypeError(
-            "Distributions must be formatted as 'type,clients' (e.g., normal,10)"
-        ) from err
-
-
 def parse_args(args: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Discrete Event Simulator")
+    
     parser.add_argument(
-        "--dist",
-        type=parse_distribution,
-        action="append",
+        "--num_clients",
+        required=True,
+        type=int,
+        help=(
+            "The number of clients to generate"
+        ),
+    )
+    
+    parser.add_argument(
+        "--max_workers",
         required=True,
         help=(
-            "Specify distribution and clients as 'type,clients'. "
-            "Example: --dist normal,10 --dist poisson,5"
+            "The number of workers to generate"
         ),
+        type = int
     )
 
     parsed_args = parser.parse_args()
 
     # Iterate through your configured client groups
-    for config in parsed_args.dist:
-        print(
-            f"Spawning {config['clients']} clients with "
-            f"{config['create_distribution']} event creation distribution, "
-            f"{config['delay_distribution']} delay distribution, "
-            f"{config['event_value_distribution']} event value distribution."
-        )
+    print(f"Spawning {parsed_args.num_clients} clients with ")
 
     return parsed_args
 

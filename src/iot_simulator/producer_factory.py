@@ -1,13 +1,9 @@
 import numpy as np
-
-"""
-receives cmd line arguments to generate groups of producers
-"""
+import asyncio
 
 from iot_simulator.distributions import Distribution
 from iot_simulator.event_emitters import EventEmitter
 from iot_simulator.producers import Producer
-
 
 class ProducerFactory:
     def make_producers(
@@ -22,12 +18,15 @@ class ProducerFactory:
     ) -> list[Producer]:
         producers = []
         for _ in range(num_producers):
+            pause_event = asyncio.Event()
             producers.append(
                 producer(
                     event_create_distribution=create_distribution(rng),
                     event_delay_distribution=delay_distribtuion(rng),
                     event_value_distribution=event_value_distribution(rng),
                     event_emitter=emitter,
+                    paused=pause_event
+                    
                 )
             )
         return producers

@@ -26,6 +26,7 @@ class Producer(Protocol):
         event_delay_distribution: Distribution,
         event_value_distribution: Distribution,
         event_emitter: EventEmitter,
+        paused: asyncio.Event
     ) -> None: ...
 
     def generate_event(self) -> tuple[float, float, float]: ...
@@ -40,12 +41,14 @@ class IOTProducer(Producer):
         event_delay_distribution: Distribution,
         event_value_distribution: Distribution,
         event_emitter: EventEmitter,
+        paused: asyncio.Event
     ):
         self.id = uuid.uuid4()
         self.event_create_distribution = event_create_distribution
         self.event_delay_distribution = event_delay_distribution
         self.event_value_distribution = event_value_distribution
         self.event_emitter = event_emitter
+        self.paused = paused
 
     def generate_event(self) -> tuple[float, float, float]:
         event_inter_arrival_time = self.event_create_distribution.sample()
@@ -65,14 +68,17 @@ class IOTProducer(Producer):
                     print(f"Error emitting event from producer {self.id}: {e}")
 
         while True:
-            event_inter_arrival_time, event_delay_time, event_value = (
-                self.generate_event()
-            )
-            await asyncio.sleep(max(0.0, event_inter_arrival_time))
-            event_start_time = datetime.now()
-            event = Event(
-                producer_id=self.id, event_time=event_start_time, payload=event_value
-            )
-            task = asyncio.create_task(delay_and_emit(event_delay_time, event))
-            background_tasks.add(task)
-            task.add_done_callback(background_tasks.discard)
+            if not self.paused.is_set():
+                event_inter_arrival_time, event_delay_time, event_value = (
+                    self.generate_event()
+                )
+                await asyncio.sleep(max(0.0, event_inter_arrival_time))
+                event_start_time = datetime.now()
+                event = Event(
+                    producer_id=self.id, event_time=event_start_time, payload=event_value
+                )
+                task = asyncio.create_task(delay_and_emit(event_delay_time, event))
+                background_tasks.add(task)
+                task.add_done_callback(background_tasks.discard)
+            else:
+                await asyncio.sleep(0.2)
