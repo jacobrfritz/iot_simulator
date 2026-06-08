@@ -18,6 +18,7 @@ class Producer(Protocol):
     id: uuid.UUID
     event_create_distribution: Distribution
     event_delay_distribution: Distribution
+    event_value_distribution: Distribution
     event_emitter: EventEmitter
 
     def __init__(
@@ -26,7 +27,7 @@ class Producer(Protocol):
         event_delay_distribution: Distribution,
         event_value_distribution: Distribution,
         event_emitter: EventEmitter,
-        paused: asyncio.Event
+        paused: asyncio.Event,
     ) -> None: ...
 
     def generate_event(self) -> tuple[float, float, float]: ...
@@ -41,8 +42,8 @@ class IOTProducer(Producer):
         event_delay_distribution: Distribution,
         event_value_distribution: Distribution,
         event_emitter: EventEmitter,
-        paused: asyncio.Event
-    ):
+        paused: asyncio.Event,
+    ) -> None:
         self.id = uuid.uuid4()
         self.event_create_distribution = event_create_distribution
         self.event_delay_distribution = event_delay_distribution
@@ -75,7 +76,9 @@ class IOTProducer(Producer):
                 await asyncio.sleep(max(0.0, event_inter_arrival_time))
                 event_start_time = datetime.now()
                 event = Event(
-                    producer_id=self.id, event_time=event_start_time, payload=event_value
+                    producer_id=self.id,
+                    event_time=event_start_time,
+                    payload=event_value,
                 )
                 task = asyncio.create_task(delay_and_emit(event_delay_time, event))
                 background_tasks.add(task)

@@ -8,7 +8,9 @@ class Distribution(Protocol):
 
 
 class Normal(Distribution):
-    def __init__(self, rng:np.random.Generator, mean: float = 1.0, sd: float = 0.25) -> None:
+    def __init__(
+        self, rng: np.random.Generator, mean: float = 1.0, sd: float = 0.25
+    ) -> None:
         self.rng = rng
         self.mean = mean
         self.sd = sd
@@ -18,7 +20,7 @@ class Normal(Distribution):
 
 
 class Exponential(Distribution):
-    def __init__(self, rng:np.random.Generator, scale: float = 1.0) -> None:
+    def __init__(self, rng: np.random.Generator, scale: float = 1.0) -> None:
         self.rng = rng
         self.scale = scale
 
@@ -28,7 +30,9 @@ class Exponential(Distribution):
 
 
 class LogNormal(Distribution):
-    def __init__(self, rng:np.random.Generator, mean: float = 0, sigma: float = 0.4) -> None:
+    def __init__(
+        self, rng: np.random.Generator, mean: float = 0, sigma: float = 0.4
+    ) -> None:
         self.rng = rng
         self.mean = mean
         self.sigma = sigma

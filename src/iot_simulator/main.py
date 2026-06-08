@@ -1,19 +1,20 @@
 import argparse
 import asyncio
-import numpy as np
 
+import numpy as np
 import redis.asyncio as aioredis
+
+from iot_simulator.interfaces import Event
 
 from .distributions import Exponential, LogNormal, Normal
 from .event_emitters import GatewayEventEmitter
 from .producer_factory import ProducerFactory
 from .producers import IOTProducer
-from .workers import GatewayWorker
 from .worker_manager import WorkerManager
+from .workers import GatewayWorker
 
-            
 
-def get_redis(host: str = "localhost", port: int = 6379):
+def get_redis(host: str = "localhost", port: int = 6379) -> aioredis.Redis:
     pool = aioredis.BlockingConnectionPool(
         host=host,
         port=port,
@@ -21,20 +22,19 @@ def get_redis(host: str = "localhost", port: int = 6379):
         timeout=30,
         decode_responses=True,
     )
-    return  aioredis.Redis(connection_pool=pool)
-        
-               
+    return aioredis.Redis(connection_pool=pool)
+
+
 async def run(args: argparse.Namespace) -> None:
     """Core application logic."""
 
-    queue = asyncio.Queue()
+    queue: asyncio.Queue[Event] = asyncio.Queue()
     emitter = GatewayEventEmitter(queue)
     shared_rng = np.random.default_rng()
     worker_manager = WorkerManager()
     producer_factory = ProducerFactory()
-    
+
     try:
-        
         producers = producer_factory.make_producers(
             num_producers=args.num_clients,
             producer=IOTProducer,
@@ -42,9 +42,14 @@ async def run(args: argparse.Namespace) -> None:
             delay_distribtuion=LogNormal,
             event_value_distribution=Normal,
             emitter=emitter,
-            rng=shared_rng
+            rng=shared_rng,
         )
-        workers = [worker_manager.create_worker(GatewayWorker, queue, get_redis(), GatewayEventEmitter, 100, worker) for worker in range(args.max_workers)]
+        workers = [
+            worker_manager.create_worker(
+                GatewayWorker, queue, get_redis(), emitter, 100, worker
+            )
+            for worker in range(args.max_workers)
+        ]
         event_loops = [producer.event_loop() for producer in producers]
         await asyncio.gather(*event_loops, *workers)
     finally:
