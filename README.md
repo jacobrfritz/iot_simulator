@@ -69,3 +69,11 @@ Alternatively, you can run these directly via `uv`, for example: `uv run pytest`
 - `pyproject.toml`: Project metadata and dependencies.
 - `bootstrap.py`: Interactive setup script.
 - `Makefile`: Shortcuts for common tasks.
+
+## Requirements
+
+- generate events with a given distribution
+- delay events with a given distribution
+- generate many producers
+- centralized producer control
+    - scale producers on a schedule or probabalistically
